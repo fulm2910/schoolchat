@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <title>Admin · schoolchat</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/admin.css">
+  <script src="/common.js" defer></script>
+  <script src="/admin.js" defer></script>
+</head>
+<body class="admin-body">
+  <header class="admin-top">
+    <div class="admin-top-inner">
+      <a class="brand brand-small admin-brand" href="/">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-name">schoolchat</span>
+      </a>
+      <span class="admin-pill">Admin</span>
+      <a class="btn btn-ghost small admin-back" href="/">Back to chat</a>
+    </div>
+  </header>
+
+  <main class="admin-main" id="admin-main" hidden>
+    <nav class="admin-tabs" role="tablist">
+      <button type="button" class="admin-tab active" data-tab="reports" role="tab" aria-selected="true">Reports <span class="count" id="report-count"></span></button>
+      <button type="button" class="admin-tab" data-tab="users" role="tab" aria-selected="false">Users</button>
+      <button type="button" class="admin-tab" data-tab="filter" role="tab" aria-selected="false">Word filter</button>
+    </nav>
+
+    <section class="admin-panel" id="panel-reports">
+      <div class="panel-head">
+        <div>
+          <h1>Reports</h1>
+          <p class="muted">Messages people flagged, with the conversation around them.</p>
+        </div>
+        <div class="seg" id="report-status">
+          <button type="button" class="seg-btn active" data-status="open">Open</button>
+          <button type="button" class="seg-btn" data-status="resolved">Resolved</button>
+          <button type="button" class="seg-btn" data-status="dismissed">Dismissed</button>
+        </div>
+      </div>
+      <div id="reports" class="report-list"></div>
+    </section>
+
+    <section class="admin-panel" id="panel-users" hidden>
+      <div class="panel-head">
+        <div>
+          <h1>Users</h1>
+          <p class="muted">Ban, unban, promote and reset passwords.</p>
+        </div>
+        <input class="input admin-search" id="user-filter" type="search" placeholder="Search usernames" maxlength="20" autocomplete="off" aria-label="Search usernames">
+      </div>
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr><th>User</th><th>Status</th><th class="num">Messages</th><th>Joined</th><th class="right">Actions</th></tr></thead>
+          <tbody id="users"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="admin-panel" id="panel-filter" hidden>
+      <div class="panel-head">
+        <div>
+          <h1>Word filter</h1>
+          <p class="muted">Messages, usernames and room names containing these words are rejected. Matching ignores case, accents and common substitutions like 0→o, 1→i, @→a, 3→e, $→s.</p>
+        </div>
+      </div>
+      <form id="filter-form" class="filter-form" novalidate>
+        <input class="input" name="word" placeholder="Add a word or phrase" maxlength="50" autocomplete="off" aria-label="Word or phrase to block">
+        <button class="btn btn-primary" type="submit">Add</button>
+      </form>
+      <p class="form-error" id="filter-error" hidden></p>
+      <ul id="filter-words" class="word-list"></ul>
+    </section>
+  </main>
+
+  <main class="admin-denied" id="admin-denied" hidden>
+    <h1>Admins only</h1>
+    <p class="muted">You need an admin account to see this page.</p>
+    <a class="btn btn-primary" href="/">Go to chat</a>
+  </main>
+</body>
+</html>

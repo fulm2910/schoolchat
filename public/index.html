@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f6f4f1" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#121214" media="(prefers-color-scheme: dark)">
+  <title>schoolchat</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/common.js" defer></script>
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <div id="boot" class="boot" aria-hidden="true"><span class="brand-mark"></span></div>
+
+  <!-- Sign in / sign up -->
+  <main id="auth-view" class="auth" hidden>
+    <div class="auth-card">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-name">schoolchat</span>
+      </div>
+      <p class="auth-tagline">A small, warm place to talk.</p>
+
+      <div class="tabs" role="tablist" id="auth-tabs">
+        <button type="button" role="tab" class="tab active" data-tab="login" aria-selected="true">Log in</button>
+        <button type="button" role="tab" class="tab" data-tab="signup" aria-selected="false">Create account</button>
+      </div>
+
+      <form id="login-form" class="form" novalidate>
+        <label class="field">
+          <span class="field-label">Username</span>
+          <input name="username" autocomplete="username" autocapitalize="off" spellcheck="false" maxlength="20" required>
+        </label>
+        <label class="field">
+          <span class="field-label">Password</span>
+          <input name="password" type="password" autocomplete="current-password" maxlength="72" required>
+        </label>
+        <p class="form-error" role="alert" hidden></p>
+        <button class="btn btn-primary btn-block" type="submit">Log in</button>
+      </form>
+
+      <form id="signup-form" class="form" novalidate hidden>
+        <label class="field">
+          <span class="field-label">Username</span>
+          <input name="username" autocomplete="username" autocapitalize="off" spellcheck="false" maxlength="20" required>
+          <span class="field-hint">3–20 letters, numbers or underscores.</span>
+        </label>
+        <label class="field">
+          <span class="field-label">Password</span>
+          <input name="password" type="password" autocomplete="new-password" maxlength="72" required>
+          <span class="field-hint">8–72 characters.</span>
+        </label>
+        <label class="field">
+          <span class="field-label">Confirm password</span>
+          <input name="confirm" type="password" autocomplete="new-password" maxlength="72" required>
+        </label>
+        <label class="field" id="invite-field" hidden>
+          <span class="field-label">Invite code</span>
+          <input name="inviteCode" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="100">
+        </label>
+        <div class="field">
+          <span class="field-label" id="challenge-label">Quick check: <strong id="challenge-question">…</strong></span>
+          <div class="input-row">
+            <input name="answer" inputmode="numeric" autocomplete="off" maxlength="6" aria-labelledby="challenge-label" required>
+            <button type="button" class="btn btn-ghost" id="challenge-refresh">New question</button>
+          </div>
+        </div>
+        <div class="hp" aria-hidden="true">
+          <label>Website <input name="website" tabindex="-1" autocomplete="off"></label>
+        </div>
+        <p class="form-error" role="alert" hidden></p>
+        <button class="btn btn-primary btn-block" type="submit">Create account</button>
+      </form>
+
+      <form id="reset-form" class="form" novalidate hidden>
+        <p class="notice">An admin reset your password. Choose a new one to continue.</p>
+        <label class="field">
+          <span class="field-label">Temporary password</span>
+          <input name="currentPassword" type="password" autocomplete="current-password" maxlength="72" required>
+        </label>
+        <label class="field">
+          <span class="field-label">New password</span>
+          <input name="newPassword" type="password" autocomplete="new-password" maxlength="72" required>
+          <span class="field-hint">8–72 characters.</span>
+        </label>
+        <label class="field">
+          <span class="field-label">Confirm new password</span>
+          <input name="confirm" type="password" autocomplete="new-password" maxlength="72" required>
+        </label>
+        <p class="form-error" role="alert" hidden></p>
+        <button class="btn btn-primary btn-block" type="submit">Save and continue</button>
+        <button class="btn btn-ghost btn-block" type="button" id="reset-logout">Log out</button>
+      </form>
+    </div>
+  </main>
+
+  <!-- Chat -->
+  <div id="app-view" class="app" hidden>
+    <aside class="sidebar" aria-label="Conversations">
+      <header class="sidebar-head">
+        <div class="brand brand-small">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span class="brand-name">schoolchat</span>
+        </div>
+        <span class="conn" id="conn-status" title="Connecting…"></span>
+      </header>
+
+      <div class="search">
+        <input id="user-search" type="search" placeholder="Find people" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Find people to message" maxlength="20">
+        <ul id="search-results" class="search-results" role="listbox" hidden></ul>
+      </div>
+
+      <nav class="nav" id="nav">
+        <section class="nav-section">
+          <div class="nav-head">
+            <span>Rooms</span>
+            <button type="button" class="icon-btn small" id="btn-rooms" aria-label="Browse or create rooms" title="Browse or create rooms"></button>
+          </div>
+          <ul class="nav-list" id="list-room"></ul>
+        </section>
+        <section class="nav-section">
+          <div class="nav-head">
+            <span>Groups</span>
+            <button type="button" class="icon-btn small" id="btn-group" aria-label="New private group" title="New private group"></button>
+          </div>
+          <ul class="nav-list" id="list-group"></ul>
+        </section>
+        <section class="nav-section">
+          <div class="nav-head">
+            <span>Direct messages</span>
+            <button type="button" class="icon-btn small" id="btn-dm" aria-label="New direct message" title="New direct message"></button>
+          </div>
+          <ul class="nav-list" id="list-dm"></ul>
+        </section>
+      </nav>
+
+      <footer class="me">
+        <button type="button" class="me-btn" id="btn-me" aria-label="Account menu">
+          <span id="me-avatar"></span>
+          <span class="me-text">
+            <span class="me-name" id="me-name"></span>
+            <span class="me-role" id="me-role"></span>
+          </span>
+          <span id="me-gear"></span>
+        </button>
+      </footer>
+    </aside>
+
+    <section class="main" aria-label="Conversation">
+      <div id="empty-state" class="empty">
+        <span class="brand-mark big" aria-hidden="true"></span>
+        <h2>Pick a conversation</h2>
+        <p>Choose a room, group or person on the left to start talking.</p>
+      </div>
+
+      <div id="conv" class="conv" hidden>
+        <header class="conv-head">
+          <button type="button" class="icon-btn back" id="btn-back" aria-label="Back to conversations"></button>
+          <div class="conv-icon" id="conv-icon"></div>
+          <div class="conv-title">
+            <h1 id="conv-name"></h1>
+            <p id="conv-sub"></p>
+          </div>
+          <button type="button" class="btn btn-ghost small" id="btn-details">Details</button>
+        </header>
+
+        <div class="messages" id="messages" tabindex="0">
+          <div class="messages-inner" id="messages-inner"></div>
+        </div>
+
+        <div class="composer-wrap">
+          <div class="typing" id="typing" aria-live="polite"></div>
+          <form class="composer" id="composer" novalidate>
+            <textarea id="composer-input" rows="1" placeholder="Message" aria-label="Message" maxlength="4000"></textarea>
+            <button class="send-btn" type="submit" id="send-btn" aria-label="Send message"></button>
+          </form>
+          <div class="composer-meta">
+            <span class="composer-error" id="composer-error" role="alert"></span>
+            <span class="composer-hint" id="composer-hint"><kbd>Enter</kbd> to send · <kbd>Shift</kbd>+<kbd>Enter</kbd> for a new line</span>
+            <span class="char-count" id="char-count"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
